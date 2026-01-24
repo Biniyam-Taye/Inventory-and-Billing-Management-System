@@ -127,18 +127,19 @@ public class ClientApp extends Application {
         updateButton.setOnAction(e -> updateProduct());
 
         Button deleteButton = new Button("Delete");
-        deleteButton.setStyle("-fx-background-color: #d9534f; -fx-text-fill: white;");
+        // Style handled by CSS
         deleteButton.setOnAction(e -> deleteProduct());
 
         Button refreshButton = new Button("Refresh");
         refreshButton.setOnAction(e -> refreshTable());
 
-        HBox form = new HBox(10, nameField, priceField, qtyField, catField, addButton, updateButton, deleteButton,
+        FlowPane form = new FlowPane(15, 15);
+        form.setPadding(new Insets(20));
+        form.getChildren().addAll(nameField, priceField, qtyField, catField, addButton, updateButton, deleteButton,
                 refreshButton);
-        form.setPadding(new Insets(10));
 
-        VBox layout = new VBox(10, table, form);
-        layout.setPadding(new Insets(10));
+        VBox layout = new VBox(15, table, form);
+        layout.setPadding(new Insets(20));
 
         // Listener
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -207,8 +208,8 @@ public class ClientApp extends Application {
         Button refreshReportsBtn = new Button("Refresh Report");
         refreshReportsBtn.setOnAction(e -> refreshReports());
 
-        VBox layout = new VBox(10, salesTable, totalSalesLabel, refreshReportsBtn);
-        layout.setPadding(new Insets(10));
+        VBox layout = new VBox(15, salesTable, totalSalesLabel, refreshReportsBtn);
+        layout.setPadding(new Insets(20));
 
         tab.setContent(layout);
         return tab;

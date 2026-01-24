@@ -1,130 +1,213 @@
-/* Modern Dark Theme for Inventory System */
+/* PREMIUM MODERN DARK THEME */
 .root {
-    -fx-base: #1e1e1e;
-    -fx-background-color: #1e1e1e;
-    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-base: #121212;
+    -fx-background-color: linear-gradient(to bottom right, #121212, #1a1a1a);
+    -fx-font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
     -fx-font-size: 14px;
+    -fx-text-fill: #e0e0e0;
 }
 
-/* Tabs */
-.tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: #252526;
-}
-
+/* --- TAB PANE --- */
 .tab-pane {
-    -fx-tab-min-width: 120px;
+    -fx-tab-min-width: 100px;
     -fx-tab-max-height: 40px;
+    -fx-padding: 10 0 0 0;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+    /* Clean look */
 }
 
 .tab {
-    -fx-background-color: #2d2d30;
-    -fx-background-insets: 0 1 0 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
     -fx-padding: 10 20;
-    -fx-text-fill: #b0b0b0;
+    -fx-border-color: transparent transparent #333 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-cursor: hand;
 }
 
 .tab:selected {
-    -fx-background-color: #3e3e42;
-    -fx-text-fill: white;
-    -fx-border-color: #007acc;
-    -fx-border-width: 0 0 2 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #70e1f5 transparent;
+    /* Gradient start color */
+    -fx-border-width: 0 0 3 0;
 }
 
-.tab:hover {
-    -fx-background-color: #3e3e42;
-    -fx-cursor: hand;
+.tab .tab-label {
+    -fx-text-fill: #888;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
 }
 
-/* Tables */
+.tab:selected .tab-label {
+    -fx-text-fill: #ffd194;
+    /* Gold/warm accent */
+    -fx-effect: dropshadow(gaussian, rgba(255, 209, 148, 0.4), 10, 0, 0, 0);
+}
+
+.tab:hover .tab-label {
+    -fx-text-fill: #ccc;
+}
+
+/* --- TABLES --- */
 .table-view {
-    -fx-background-color: #252526;
-    -fx-border-color: #3e3e42;
-    -fx-table-cell-border-color: #3e3e42;
+    -fx-background-color: transparent;
+    /* Let background show through */
+    -fx-table-cell-border-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 4);
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #2d2d30;
+    -fx-background-color: #1f1f1f;
+    -fx-background-radius: 8 8 0 0;
 }
 
-.table-view .column-header,
-.table-view .filler {
+.table-view .column-header {
     -fx-background-color: transparent;
-    -fx-size: 35px;
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: #3e3e42;
+    -fx-size: 45px;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.1) transparent;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
-
-/* Fix for cell text color */
-.table-cell {
-    -fx-text-fill: white;
+    -fx-text-fill: #ffd194;
+    -fx-font-weight: 800;
+    -fx-text-transform: uppercase;
+    -fx-font-size: 12px;
+    -fx-letter-spacing: 1px;
 }
 
 .table-row-cell {
-    -fx-background-color: #252526;
-    -fx-text-fill: white;
+    -fx-background-color: #1a1a1a;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #2d2d30;
+    -fx-background-color: #202020;
 }
 
-.table-row-cell:selected {
-    -fx-background-color: #007acc;
-    -fx-text-fill: white;
-}
-
-/* Buttons */
-.button {
-    -fx-background-color: #007acc;
-    -fx-text-fill: white;
-    -fx-background-radius: 4;
-    -fx-padding: 8 15;
-    -fx-font-weight: bold;
+.table-row-cell:hover {
+    -fx-background-color: #2a2a2a;
     -fx-cursor: hand;
 }
 
+.table-row-cell:selected {
+    -fx-background-color: rgba(112, 225, 245, 0.2);
+    /* Soft Blue selection */
+    -fx-background-insets: 0;
+}
+
+.table-cell {
+    -fx-text-fill: #e0e0e0;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 0 0 10;
+}
+
+/* --- BUTTONS --- */
+.button {
+    -fx-background-color: linear-gradient(to right, #00c6ff, #0072ff);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 10 25;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 114, 255, 0.4), 10, 0, 0, 4);
+    -fx-font-size: 13px;
+    -fx-transition: all 0.3s;
+}
+
 .button:hover {
-    -fx-background-color: #0098ff;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 122, 204, 0.4), 10, 0, 0, 0);
+    -fx-background-color: linear-gradient(to right, #00d2ff, #3a7bd5);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 .button:pressed {
     -fx-background-color: #005a9e;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
 }
 
-/* Text Fields */
-.text-field {
-    -fx-background-color: #333337;
+/* Specific Button Styles based on context if we had IDs, 
+   but generically making the 'Delete' button red */
+.button[text="Delete"] {
+    -fx-background-color: linear-gradient(to right, #ff416c, #ff4b2b);
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 75, 43, 0.4), 10, 0, 0, 4);
+}
+
+.button[text="Delete"]:hover {
+    -fx-background-color: linear-gradient(to right, #ff5e82, #ff6649);
+}
+
+/* --- TEXT FIELDS & COMBOBOX --- */
+.text-field,
+.combo-box {
+    -fx-background-color: #252526;
     -fx-text-fill: white;
-    -fx-prompt-text-fill: #808080;
-    -fx-background-radius: 4;
-    -fx-border-color: #3e3e42;
-    -fx-border-radius: 4;
-    -fx-padding: 8;
+    -fx-prompt-text-fill: #666;
+    -fx-background-radius: 8;
+    -fx-border-color: transparent transparent #444 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 10;
 }
 
-.text-field:focused {
-    -fx-border-color: #007acc;
+.text-field:focused,
+.combo-box:focused {
+    -fx-background-color: #2d2d30;
+    -fx-border-color: transparent transparent #00c6ff transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 198, 255, 0.2), 10, 0, 0, 2);
 }
 
-/* Labels */
+.combo-box .list-cell {
+    -fx-background-color: #252526;
+    -fx-text-fill: white;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #3e3e42;
+}
+
+/* --- LABELS --- */
 .label {
-    -fx-text-fill: #e1e1e1;
+    -fx-text-fill: #e0e0e0;
+    -fx-font-family: 'Segoe UI Semibold';
 }
 
-/* Text Area (Log) */
+/* --- LOG AREA --- */
 .text-area {
-    -fx-background-color: #1e1e1e;
-    -fx-text-fill: #00ff00;
-    /* Hacker green loop */
-    -fx-font-family: 'Consolas', monospace;
+    -fx-background-color: #0a0a0a;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #333;
+    -fx-font-family: 'JetBrains Mono', 'Consolas', monospace;
+    -fx-font-size: 12px;
 }
 
 .text-area .content {
-    -fx-background-color: #1e1e1e;
+    -fx-background-color: #0a0a0a;
+}
+
+.text-area:focused {
+    -fx-border-color: #555;
+}
+
+/* ScrollBar styling for a cleaner look */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #444;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #666;
 }
