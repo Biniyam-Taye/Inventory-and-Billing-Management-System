@@ -91,4 +91,5 @@ public class InventoryServiceImpl extends UnicastRemoteObject implements Invento
             throw new RemoteException("Error getting sales report", e);
         }
     }
+
 }

@@ -204,4 +204,16 @@ public class DatabaseHandler {
         }
         return list;
     }
+
+    public synchronized void resetDatabase() throws SQLException {
+        try (Connection conn = getConnection();
+                Statement stmt = conn.createStatement()) {
+            // Truncate both tables to reset data and IDs
+            stmt.executeUpdate("TRUNCATE TABLE sales");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0"); // Disable checks to truncate products if needed
+            stmt.executeUpdate("TRUNCATE TABLE products");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            System.out.println("Database reset complete.");
+        }
+    }
 }
