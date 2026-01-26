@@ -1,9 +1,12 @@
 package com.inventory.server;
 
 import com.inventory.common.Product;
+import com.inventory.common.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DatabaseHandler {
     private static final String URL = "jdbc:mysql://localhost:3306/";
@@ -49,6 +52,16 @@ public class DatabaseHandler {
             } catch (SQLException e) {
                 // Column likely exists, ignore
             }
+
+            // Create users table for authentication
+            String createUsersTable = "CREATE TABLE IF NOT EXISTS users (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY," +
+                    "username VARCHAR(50) NOT NULL UNIQUE," +
+                    "email VARCHAR(100) NOT NULL UNIQUE," +
+                    "password VARCHAR(255) NOT NULL," +
+                    "full_name VARCHAR(100) NOT NULL," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+            stmt.executeUpdate(createUsersTable);
 
             System.out.println("Database and tables initialized.");
         } catch (SQLException e) {
@@ -215,5 +228,106 @@ public class DatabaseHandler {
             stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
             System.out.println("Database reset complete.");
         }
+    }
+
+    // ========== AUTHENTICATION METHODS ==========
+
+    /**
+     * Hash password using SHA-256
+     */
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+
+    /**
+     * Register a new user
+     */
+    public synchronized boolean registerUser(User user) throws SQLException {
+        String sql = "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, hashPassword(user.getPassword()));
+            pstmt.setString(4, user.getFullName());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            // Check if it's a duplicate key error
+            if (e.getErrorCode() == 1062) { // MySQL duplicate entry error code
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Authenticate user login
+     */
+    public synchronized User authenticateUser(String username, String password) throws SQLException {
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, hashPassword(password));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            "", // Don't return password
+                            rs.getString("full_name"));
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if username exists
+     */
+    public synchronized boolean usernameExists(String username) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if email exists
+     */
+    public synchronized boolean emailExists(String email) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
     }
 }

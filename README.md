@@ -29,8 +29,27 @@ The server handles the database connection and synchronization.
 ### Step 2: Start the Client (GUI)
 1. Navigate to `com.inventory.client`.
 2. Right-click on `ClientApp.java` and select **Run File**.
-3. The GUI window will open.
+3. The **Login Screen** will appear first.
 4. You can open multiple clients (run `ClientApp.java` again) to test real-time updates.
+
+## Authentication
+The system now includes user authentication with beautiful, modern UI:
+
+### First Time Users
+1. Click **"Sign Up"** on the login screen
+2. Fill in your details:
+   - Full Name
+   - Username (must be unique)
+   - Email (must be unique and valid)
+   - Password (minimum 6 characters)
+   - Confirm Password
+3. Click **"Create Account"**
+4. You'll be redirected to the login screen
+
+### Existing Users
+1. Enter your **Username** and **Password**
+2. Click **"Sign In"**
+3. Access granted to the main inventory system
 
 ## Features Usage
 1. **Inventory Tab**: Add products first.
@@ -42,3 +61,4 @@ The server handles the database connection and synchronization.
 If your MySQL password is not empty, edit:
 `src/main/java/com/inventory/server/DatabaseHandler.java`
 Update the `USER` and `PASS` constants.
+

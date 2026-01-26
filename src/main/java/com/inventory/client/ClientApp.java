@@ -3,6 +3,7 @@ package com.inventory.client;
 import com.inventory.common.InventoryService;
 import com.inventory.common.Product;
 import com.inventory.common.SaleRecord;
+import com.inventory.server.DatabaseHandler;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,6 +47,22 @@ public class ClientApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setTitle("Inventory & Billing System");
+
+        // Initialize DatabaseHandler for authentication
+        DatabaseHandler dbHandler = new DatabaseHandler();
+
+        // Create and show login screen
+        LoginScreen loginScreen = new LoginScreen(dbHandler, primaryStage, () -> {
+            // This runs after successful login
+            loadMainApplication(primaryStage);
+        });
+
+        primaryStage.setScene(loginScreen.createLoginScene());
+        primaryStage.show();
+    }
+
+    private void loadMainApplication(Stage primaryStage) {
         // Connect to RMI
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
@@ -58,8 +75,6 @@ public class ClientApp extends Application {
         // Connect Socket
         SocketClient socketClient = new SocketClient(this::log);
         socketClient.start();
-
-        primaryStage.setTitle("Inventory & Billing System");
 
         TabPane tabPane = new TabPane();
         tabPane.getTabs().addAll(createInventoryTab(), createBillingTab(), createReportsTab());
@@ -82,7 +97,7 @@ public class ClientApp extends Application {
         }
 
         primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.setTitle("Inventory & Billing System - Main Dashboard");
 
         refreshTable();
     }
