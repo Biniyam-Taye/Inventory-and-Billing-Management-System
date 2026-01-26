@@ -28,6 +28,8 @@ public class ClientApp extends Application {
     private ObservableList<Product> productList = FXCollections.observableArrayList();
     private ObservableList<SaleRecord> salesList = FXCollections.observableArrayList();
     private TextArea logArea;
+    private Stage primaryStage;
+    private SocketClient socketClient;
 
     // UI Controls Inventory
     private TableView<Product> table;
@@ -47,6 +49,7 @@ public class ClientApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         primaryStage.setTitle("Inventory & Billing System");
 
         // Initialize DatabaseHandler for authentication
@@ -73,7 +76,10 @@ public class ClientApp extends Application {
         }
 
         // Connect Socket
-        SocketClient socketClient = new SocketClient(this::log);
+        if (socketClient != null) {
+            socketClient.close();
+        }
+        socketClient = new SocketClient(this::log);
         socketClient.start();
 
         TabPane tabPane = new TabPane();
@@ -84,6 +90,7 @@ public class ClientApp extends Application {
         logArea.setPrefHeight(100);
 
         BorderPane root = new BorderPane();
+        root.setTop(createHeader());
         root.setCenter(tabPane);
         root.setBottom(logArea);
 
@@ -100,6 +107,28 @@ public class ClientApp extends Application {
         primaryStage.setTitle("Inventory & Billing System - Main Dashboard");
 
         refreshTable();
+    }
+
+    private HBox createHeader() {
+        HBox header = new HBox();
+        header.setPadding(new Insets(10, 20, 10, 20));
+        header.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        header.setStyle("-fx-background-color: #1f1f1f; -fx-border-color: #333333; -fx-border-width: 0 0 1 0;");
+
+        Button logoutBtn = new Button("Logout");
+        logoutBtn.setStyle(
+                "-fx-background-color: linear-gradient(to right, #ff416c, #ff4b2b); -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(255, 75, 43, 0.4), 10, 0, 0, 4);");
+        logoutBtn.setOnAction(e -> logout());
+
+        header.getChildren().add(logoutBtn);
+        return header;
+    }
+
+    private void logout() {
+        if (socketClient != null) {
+            socketClient.close();
+        }
+        start(primaryStage); // Re-initialize login screen
     }
 
     private Tab createInventoryTab() {
