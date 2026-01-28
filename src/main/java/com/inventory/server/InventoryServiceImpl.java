@@ -92,4 +92,30 @@ public class InventoryServiceImpl extends UnicastRemoteObject implements Invento
         }
     }
 
+    @Override
+    public com.inventory.common.User login(String username, String password) throws RemoteException {
+        try {
+            return dbHandler.authenticateUser(username, password);
+        } catch (SQLException e) {
+            throw new RemoteException("Error logging in", e);
+        }
+    }
+
+    @Override
+    public boolean registerUser(com.inventory.common.User user) throws RemoteException {
+        try {
+            return dbHandler.registerUser(user);
+        } catch (SQLException e) {
+            throw new RemoteException("Error registering user", e);
+        }
+    }
+
+    @Override
+    public boolean checkUserExists(String username, String email) throws RemoteException {
+        try {
+            return dbHandler.usernameExists(username) || dbHandler.emailExists(email);
+        } catch (SQLException e) {
+            throw new RemoteException("Error checking user existence", e);
+        }
+    }
 }

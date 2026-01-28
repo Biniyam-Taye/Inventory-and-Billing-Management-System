@@ -3,7 +3,6 @@ package com.inventory.client;
 import com.inventory.common.InventoryService;
 import com.inventory.common.Product;
 import com.inventory.common.SaleRecord;
-import com.inventory.server.DatabaseHandler;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,6 +42,8 @@ public class ClientApp extends Application {
     private TableView<SaleRecord> salesTable;
     private Label totalSalesLabel;
 
+    private String serverHost = "localhost";
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -52,34 +53,45 @@ public class ClientApp extends Application {
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Inventory & Billing System");
 
-        // Initialize DatabaseHandler for authentication
-        DatabaseHandler dbHandler = new DatabaseHandler();
+        // Ask for Server IP
+        TextInputDialog dialog = new TextInputDialog("localhost");
+        dialog.setTitle("Server Configuration");
+        dialog.setHeaderText("Connect to Server");
+        dialog.setContentText("Enter Server IP Address:");
 
-        // Create and show login screen
-        LoginScreen loginScreen = new LoginScreen(dbHandler, primaryStage, () -> {
-            // This runs after successful login
-            loadMainApplication(primaryStage);
+        // Show dialog and wait for result
+        dialog.showAndWait().ifPresent(ip -> {
+            if (!ip.trim().isEmpty()) {
+                serverHost = ip.trim();
+            }
         });
 
-        primaryStage.setScene(loginScreen.createLoginScene());
-        primaryStage.show();
+        // Connect to RMI immediately to allow login
+        try {
+            Registry registry = LocateRegistry.getRegistry(serverHost, 1099);
+            service = (InventoryService) registry.lookup("InventoryService");
+
+            // Show login screen with remote service
+            LoginScreen loginScreen = new LoginScreen(service, primaryStage, () -> {
+                // This runs after successful login
+                loadMainApplication(primaryStage);
+            });
+
+            primaryStage.setScene(loginScreen.createLoginScene());
+            primaryStage.show();
+
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Cannot connect to Server at " + serverHost
+                    + "\nMake sure the server is running.\nError: " + e.getMessage()).showAndWait();
+        }
     }
 
     private void loadMainApplication(Stage primaryStage) {
-        // Connect to RMI
-        try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            service = (InventoryService) registry.lookup("InventoryService");
-        } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, "Cannot connect to Server: " + e.getMessage()).showAndWait();
-            return;
-        }
-
         // Connect Socket
         if (socketClient != null) {
             socketClient.close();
         }
-        socketClient = new SocketClient(this::log);
+        socketClient = new SocketClient(serverHost, this::log);
         socketClient.start();
 
         TabPane tabPane = new TabPane();
@@ -94,7 +106,15 @@ public class ClientApp extends Application {
         root.setCenter(tabPane);
         root.setBottom(logArea);
 
-        Scene scene = new Scene(root, 900, 650);
+        double width = 900;
+        double height = 650;
+
+        if (primaryStage.isShowing() && primaryStage.getScene() != null) {
+            width = primaryStage.getScene().getWidth();
+            height = primaryStage.getScene().getHeight();
+        }
+
+        Scene scene = new Scene(root, width, height);
 
         // Load CSS
         try {
@@ -104,7 +124,7 @@ public class ClientApp extends Application {
         }
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Inventory & Billing System - Main Dashboard");
+        primaryStage.setTitle("Inventory & Billing System - Main Dashboard (" + serverHost + ")");
 
         refreshTable();
     }

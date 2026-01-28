@@ -1,7 +1,6 @@
 package com.inventory.client;
 
 import com.inventory.common.User;
-import com.inventory.server.DatabaseHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,15 +11,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-
 public class LoginScreen {
-    private DatabaseHandler dbHandler;
+    private com.inventory.common.InventoryService service;
     private Stage primaryStage;
     private Runnable onLoginSuccess;
 
-    public LoginScreen(DatabaseHandler dbHandler, Stage primaryStage, Runnable onLoginSuccess) {
-        this.dbHandler = dbHandler;
+    public LoginScreen(com.inventory.common.InventoryService service, Stage primaryStage, Runnable onLoginSuccess) {
+        this.service = service;
         this.primaryStage = primaryStage;
         this.onLoginSuccess = onLoginSuccess;
     }
@@ -105,7 +102,16 @@ public class LoginScreen {
         root.getChildren().add(loginCard);
 
         // Allow Enter key to submit
-        Scene scene = new Scene(root, 1000, 700);
+        // Create scene using current dimensions if available to prevent resizing
+        double width = 1000;
+        double height = 700;
+
+        if (primaryStage.isShowing() && primaryStage.getScene() != null) {
+            width = primaryStage.getScene().getWidth();
+            height = primaryStage.getScene().getHeight();
+        }
+
+        Scene scene = new Scene(root, width, height);
         scene.setOnKeyPressed(e -> {
             if (e.getCode().toString().equals("ENTER")) {
                 loginButton.fire();
@@ -196,15 +202,15 @@ public class LoginScreen {
         }
 
         try {
-            User user = dbHandler.authenticateUser(username, password);
+            User user = service.login(username, password);
             if (user != null) {
                 // Login successful
                 onLoginSuccess.run();
             } else {
                 showError(errorLabel, "Invalid username or password");
             }
-        } catch (SQLException e) {
-            showError(errorLabel, "Database error: " + e.getMessage());
+        } catch (Exception e) {
+            showError(errorLabel, "Server error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -215,7 +221,7 @@ public class LoginScreen {
     }
 
     private void showRegisterScreen() {
-        RegisterScreen registerScreen = new RegisterScreen(dbHandler, primaryStage, onLoginSuccess);
+        RegisterScreen registerScreen = new RegisterScreen(service, primaryStage, onLoginSuccess);
         primaryStage.setScene(registerScreen.createRegisterScene());
     }
 }

@@ -230,7 +230,7 @@ public class DatabaseHandler {
         }
     }
 
-    // ========== AUTHENTICATION METHODS ==========
+   
 
     /**
      * Hash password using SHA-256

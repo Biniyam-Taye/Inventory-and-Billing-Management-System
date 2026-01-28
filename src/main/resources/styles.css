@@ -187,10 +187,14 @@
     -fx-border-color: #333;
     -fx-font-family: 'JetBrains Mono', 'Consolas', monospace;
     -fx-font-size: 12px;
+    -fx-text-fill: #e0e0e0;
+    /* Light gray/white text */
 }
 
 .text-area .content {
     -fx-background-color: #0a0a0a;
+    -fx-text-fill: #e0e0e0;
+    /* Light gray/white text */
 }
 
 .text-area:focused {

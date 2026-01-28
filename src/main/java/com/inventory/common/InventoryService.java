@@ -20,4 +20,11 @@ public interface InventoryService extends Remote {
     boolean processSale(int productId, int quantity) throws RemoteException;
 
     List<SaleRecord> getSalesReport() throws RemoteException;
+
+    // Authentication
+    User login(String username, String password) throws RemoteException;
+
+    boolean registerUser(User user) throws RemoteException;
+
+    boolean checkUserExists(String username, String email) throws RemoteException;
 }

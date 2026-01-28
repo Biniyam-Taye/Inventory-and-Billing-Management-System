@@ -6,20 +6,21 @@ import java.util.function.Consumer;
 import javafx.application.Platform;
 
 public class SocketClient {
-    private static final String HOST = "localhost";
+    private final String host;
     private static final int PORT = 9090;
     private final Consumer<String> onMessageReceived;
     private Socket socket;
     private volatile boolean running = true;
 
-    public SocketClient(Consumer<String> onMessageReceived) {
+    public SocketClient(String host, Consumer<String> onMessageReceived) {
+        this.host = host;
         this.onMessageReceived = onMessageReceived;
     }
 
     public void start() {
         new Thread(() -> {
             try {
-                socket = new Socket(HOST, PORT);
+                socket = new Socket(host, PORT);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 String line;

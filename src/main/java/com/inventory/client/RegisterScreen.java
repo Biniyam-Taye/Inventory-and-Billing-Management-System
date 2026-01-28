@@ -1,7 +1,6 @@
 package com.inventory.client;
 
 import com.inventory.common.User;
-import com.inventory.server.DatabaseHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,15 +11,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-
 public class RegisterScreen {
-    private DatabaseHandler dbHandler;
+    private com.inventory.common.InventoryService service;
     private Stage primaryStage;
     private Runnable onLoginSuccess;
 
-    public RegisterScreen(DatabaseHandler dbHandler, Stage primaryStage, Runnable onLoginSuccess) {
-        this.dbHandler = dbHandler;
+    public RegisterScreen(com.inventory.common.InventoryService service, Stage primaryStage, Runnable onLoginSuccess) {
+        this.service = service;
         this.primaryStage = primaryStage;
         this.onLoginSuccess = onLoginSuccess;
     }
@@ -132,7 +129,16 @@ public class RegisterScreen {
         root.getChildren().add(scrollPane);
 
         // Allow Enter key to submit
-        Scene scene = new Scene(root, 1000, 700);
+        // Create scene using current dimensions if available to prevent resizing
+        double width = 1000;
+        double height = 700;
+
+        if (primaryStage.isShowing() && primaryStage.getScene() != null) {
+            width = primaryStage.getScene().getWidth();
+            height = primaryStage.getScene().getHeight();
+        }
+
+        Scene scene = new Scene(root, width, height);
         scene.setOnKeyPressed(e -> {
             if (e.getCode().toString().equals("ENTER")) {
                 registerButton.fire();
@@ -242,19 +248,14 @@ public class RegisterScreen {
 
         try {
             // Check if username or email already exists
-            if (dbHandler.usernameExists(username)) {
-                showError(messageLabel, "Username already exists");
-                return;
-            }
-
-            if (dbHandler.emailExists(email)) {
-                showError(messageLabel, "Email already registered");
+            if (service.checkUserExists(username, email)) {
+                showError(messageLabel, "Username or Email already exists");
                 return;
             }
 
             // Create new user
             User newUser = new User(username, email, password, fullName);
-            boolean success = dbHandler.registerUser(newUser);
+            boolean success = service.registerUser(newUser);
 
             if (success) {
                 showSuccess(messageLabel, "Account created successfully! Redirecting...");
@@ -270,8 +271,8 @@ public class RegisterScreen {
             } else {
                 showError(messageLabel, "Registration failed. Please try again.");
             }
-        } catch (SQLException e) {
-            showError(messageLabel, "Database error: " + e.getMessage());
+        } catch (Exception e) {
+            showError(messageLabel, "Server error: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -289,7 +290,7 @@ public class RegisterScreen {
     }
 
     private void showLoginScreen() {
-        LoginScreen loginScreen = new LoginScreen(dbHandler, primaryStage, onLoginSuccess);
+        LoginScreen loginScreen = new LoginScreen(service, primaryStage, onLoginSuccess);
         primaryStage.setScene(loginScreen.createLoginScene());
     }
 }
